@@ -37,7 +37,7 @@ export default component$(() => {
   })
 
   return (
-    <div class="h-full w-4/6 mx-auto">
+    <div class="h-full w-4/6 mx-auto mb-10">
       <div class="mb-14">
         <p class="text-3xl">
           <span class="font-bold">Qwik-Jestify! </span><span class="text-lg">Let's have your funtion tested with Jest!</span>
