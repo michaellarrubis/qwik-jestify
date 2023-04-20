@@ -1,7 +1,6 @@
 import { OpenAIApi, Configuration } from 'openai';
 
 export const createChatCompletion = async (content: string) => {
-  console.log('secretKey: ', import.meta.env.VITE_AI_API_KEY)
   const configuration = new Configuration({
     apiKey: import.meta.env.VITE_AI_API_KEY,
   });
