@@ -3,18 +3,18 @@ import type { DocumentHead } from '@builder.io/qwik-city';
 import { createChatCompletion } from '~/services/openai';
 
 export default component$(() => {
-  const CONTENT_PREFIX = 'Unit Test with Jest, ';
+  const CONTENT_PREFIX: string = 'Unit Test with Jest, ';
 
-  const isGenerating = useSignal(false);
-  const hasApiKey = useSignal(true);
-  const textContent = useSignal('');
-  const generatedResult = useSignal('');
+  const isGenerating = useSignal<boolean>(false);
+  const hasApiKey = useSignal<boolean>(true);
+  const textContent = useSignal<string>('');
+  const generatedResult = useSignal<string>('');
 
   useTask$(async () => {
     if (!import.meta.env.VITE_AI_API_KEY) hasApiKey.value = false;
   });
 
-  const shouldBeDisabled = useComputed$(() => {
+  const shouldBeDisabled = useComputed$((): boolean => {
     return !textContent.value || isGenerating.value;
   });
   
@@ -24,17 +24,22 @@ export default component$(() => {
     
     try {
       const { data } = await createChatCompletion(`${CONTENT_PREFIX} ${textContent}`);
+      const dataContent = data?.choices[0]?.message?.content;
 
-      if (data?.choices[0]?.message?.content) {
-        generatedResult.value = data?.choices[0]?.message?.content;
+      if (dataContent) {
+        if (dataContent.includes('```')) {
+          generatedResult.value = /\`{3}([\s\S]*)\`{3}/g.exec(dataContent)?.[1] || '';
+          return;
+        }
+
+        generatedResult.value = dataContent;
       }
     } catch(e) {
       console.log('Error: ', e)
     } finally {
       isGenerating.value = false;
     }
-    
-  })
+  });
 
   return (
     <div class="h-full w-5/6 md:w-4/6 mx-auto mb-10">
