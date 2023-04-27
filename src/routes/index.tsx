@@ -3,7 +3,7 @@ import type { DocumentHead } from '@builder.io/qwik-city';
 import { createChatCompletion } from '~/services/openai';
 
 export default component$(() => {
-  const CONTENT_PREFIX: string = 'Unit Test with Jest, ';
+  const CONTENT_PREFIX: string = 'Write a unit Test with Jest on this codes ';
 
   const isGenerating = useSignal<boolean>(false);
   const hasApiKey = useSignal<boolean>(true);
@@ -24,16 +24,7 @@ export default component$(() => {
     
     try {
       const { data } = await createChatCompletion(`${CONTENT_PREFIX} ${textContent}`);
-      const dataContent = data?.choices[0]?.message?.content;
-
-      if (dataContent) {
-        if (dataContent.includes('```')) {
-          generatedResult.value = /\`{3}([\s\S]*)\`{3}/g.exec(dataContent)?.[1] || '';
-          return;
-        }
-
-        generatedResult.value = dataContent;
-      }
+      generatedResult.value = data?.choices[0]?.text || '';
     } catch(e) {
       console.log('Error: ', e)
     } finally {
