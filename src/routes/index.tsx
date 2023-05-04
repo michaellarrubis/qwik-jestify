@@ -36,7 +36,7 @@ export default component$(() => {
     <div class="h-full w-5/6 md:w-4/6 mx-auto mb-10">
       <div class="mb-14">
         <p class="text-3xl">
-          <span class="font-bold">Qwik-Jestify! </span><span class="text-lg">Let's have your funtion tested with Jest!</span>
+          <span class="font-bold">Qwik-Jestify! </span><span class="text-lg">Let's have your methods/function blocks tested with Jest!</span>
         </p>
         <small>Made with ❤️‍🔥 by <a href="https://www.linkedin.com/in/michaellarrubis/" target="_blank" class="text-sky-600">Michael Larrubis</a></small>
       </div>
