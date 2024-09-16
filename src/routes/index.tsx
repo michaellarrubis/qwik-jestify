@@ -35,14 +35,13 @@ export default component$(() => {
       const isValidScript = await validateJavascriptContent(textContent.value)
       if (!isValidScript) {
         textContent.value = ""
+        isGenerating.value = false
         return
       }
 
       handleGenerateUnitTest()
     } catch(e) {
       console.log('Error: ', e)
-    } finally {
-      isGenerating.value = false
     }
   })
 
