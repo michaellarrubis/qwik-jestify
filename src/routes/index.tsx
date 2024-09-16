@@ -1,10 +1,8 @@
 import { component$, useSignal, $, useComputed$, useTask$ } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
-import { createChatCompletion } from '~/services/openai';
+import { createChatCompletion } from '~/services/aiFramework';
 
 export default component$(() => {
-  const CONTENT_PREFIX: string = 'Write a unit Test with Jest on this codes ';
-
   const isGenerating = useSignal<boolean>(false);
   const hasApiKey = useSignal<boolean>(true);
   const textContent = useSignal<string>('');
@@ -23,8 +21,8 @@ export default component$(() => {
     if (shouldBeDisabled.value) return;
     
     try {
-      const { data } = await createChatCompletion(`${CONTENT_PREFIX} ${textContent}`);
-      generatedResult.value = data?.choices[0]?.text || '';
+      const result = await createChatCompletion(textContent.value);
+      generatedResult.value = result || '';
     } catch(e) {
       console.log('Error: ', e)
     } finally {
