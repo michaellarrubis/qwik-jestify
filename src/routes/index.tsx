@@ -33,12 +33,12 @@ export default component$(() => {
     
     try {
       const isValidScript = await validateJavascriptContent(textContent.value)
-      if (isValidScript) {
-        handleGenerateUnitTest()
+      if (!isValidScript) {
+        textContent.value = ""
         return
       }
 
-      textContent.value = ""
+      handleGenerateUnitTest()
     } catch(e) {
       console.log('Error: ', e)
     } finally {
