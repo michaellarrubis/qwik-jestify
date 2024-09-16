@@ -1,34 +1,50 @@
-import { component$, useSignal, $, useComputed$, useTask$ } from '@builder.io/qwik';
-import type { DocumentHead } from '@builder.io/qwik-city';
-import { createChatCompletion } from '~/services/aiFramework';
+import { component$, useSignal, $, useComputed$, useTask$ } from '@builder.io/qwik'
+import type { DocumentHead } from '@builder.io/qwik-city'
+import { generateUnitTest, validateJavascriptContent } from '~/services/aiService'
 
 export default component$(() => {
-  const isGenerating = useSignal<boolean>(false);
-  const hasApiKey = useSignal<boolean>(true);
-  const textContent = useSignal<string>('');
-  const generatedResult = useSignal<string>('');
+  const isGenerating = useSignal<boolean>(false)
+  const hasApiKey = useSignal<boolean>(true)
+  const textContent = useSignal<string>('')
+  const generatedResult = useSignal<string>('')
 
   useTask$(async () => {
-    if (!import.meta.env.VITE_AI_API_KEY) hasApiKey.value = false;
-  });
+    if (!import.meta.env.VITE_AI_API_KEY) hasApiKey.value = false
+  })
 
   const shouldBeDisabled = useComputed$((): boolean => {
-    return !textContent.value || isGenerating.value;
-  });
-  
-  const onGenerateResult = $(async() => {
-    isGenerating.value = true;
-    if (shouldBeDisabled.value) return;
-    
+    return !textContent.value || isGenerating.value
+  })
+
+  const handleGenerateUnitTest = $(async () => {
     try {
-      const result = await createChatCompletion(textContent.value);
-      generatedResult.value = result || '';
+      const result = await generateUnitTest(textContent.value)
+      generatedResult.value = result || ''
     } catch(e) {
       console.log('Error: ', e)
     } finally {
-      isGenerating.value = false;
+      isGenerating.value = false
     }
-  });
+  })
+  
+  const onGenerateResult = $(async() => {
+    isGenerating.value = true
+    if (shouldBeDisabled.value) return
+    
+    try {
+      const isValidScript = await validateJavascriptContent(textContent.value)
+      if (isValidScript) {
+        handleGenerateUnitTest()
+        return
+      }
+
+      textContent.value = ""
+    } catch(e) {
+      console.log('Error: ', e)
+    } finally {
+      isGenerating.value = false
+    }
+  })
 
   return (
     <div class="h-full w-5/6 md:w-4/6 mx-auto mb-10">
@@ -56,8 +72,8 @@ export default component$(() => {
 
               <button
                 onClick$={() => {
-                  generatedResult.value = '';
-                  textContent.value = '';
+                  generatedResult.value = ''
+                  textContent.value = ''
                 }}
                 class="w-full bg-white text-gray-800 py-2 px-4 rounded mt-10"
               >
@@ -87,8 +103,8 @@ export default component$(() => {
       )}
       
     </div>
-  );
-});
+  )
+})
 
 export const head: DocumentHead = {
   title: 'Qwik-Jestify: Simple Unit Test Generator!',
@@ -98,4 +114,4 @@ export const head: DocumentHead = {
       content: "Let's have your funtion tested with Jest!",
     },
   ],
-};
+}
